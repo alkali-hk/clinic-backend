@@ -91,7 +91,8 @@ class InitDataView(APIView):
 
     def post(self, request):
         secret = request.data.get('secret', '')
-        if secret != os.environ.get('SECRET_KEY', ''):
+        init_secret = os.environ.get('INIT_SECRET', 'clinic-init-2024')
+        if secret != init_secret:
             return Response({'detail': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
 
         output = io.StringIO()
