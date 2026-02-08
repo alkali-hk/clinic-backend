@@ -5,8 +5,11 @@ Core module views.
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
+import os
+import io
 from .models import ClinicSettings, ClinicRoom, Schedule
 from .serializers import (
     UserSerializer, UserCreateSerializer,
@@ -80,3 +83,20 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filterset_fields = ['doctor', 'room', 'day_of_week', 'period', 'is_active']
     ordering_fields = ['day_of_week', 'period']
+
+
+class InitDataView(APIView):
+    """初始化數據端點 - 用於生產環境初始化"""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        secret = request.data.get('secret', '')
+        if secret != os.environ.get('SECRET_KEY', ''):
+            return Response({'detail': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+
+        output = io.StringIO()
+        try:
+            call_command('init_data', stdout=output)
+            return Response({'detail': 'OK', 'output': output.getvalue()})
+        except Exception as e:
+            return Response({'detail': str(e), 'output': output.getvalue()}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

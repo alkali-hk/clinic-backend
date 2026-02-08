@@ -11,6 +11,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from core.auth_views import LoginView, LogoutView
+from core.views import InitDataView
 
 urlpatterns = [
     # Admin
@@ -21,6 +22,9 @@ urlpatterns = [
     path('api/v1/auth/logout/', LogoutView.as_view(), name='logout'),
     path('api/v1/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Init data endpoint
+    path('api/v1/init-data/', InitDataView.as_view(), name='init-data'),
     
     # API endpoints
     path('api/v1/core/', include('core.urls')),
