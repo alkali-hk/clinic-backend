@@ -24,7 +24,8 @@ def create_superuser():
             username='admin',
             email='admin@clinic.com',
             password='admin123',
-            full_name='系統管理員',
+            first_name='系統',
+            last_name='管理員',
             role='admin'
         )
         print('✓ Created superuser: admin / admin123')
